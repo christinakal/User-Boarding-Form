@@ -2,9 +2,10 @@ import React from 'react';
 import { withFormik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import './UserForm.css'
 
 
-function UserForm() {
+function UserForm( {values, errors, touched} ) {
 
     return (
         <div>
@@ -13,6 +14,9 @@ function UserForm() {
                 <div>
                     <label htmlFor="name">Name</label>
                     <Field id="name" type="text" name="name"/>
+                    {touched.name && errors.name && (
+                        <p className="errors">{errors.name}</p>
+                    )}
                 </div>
                 {/* EMAIL FIELD */}
                 <div>
@@ -27,7 +31,10 @@ function UserForm() {
                 {/* CHECKBOX */}
                 <div>
                 <label htmlFor="terms">I have read and accept the Terms of Service</label>
-                    <Field id="terms" type="checkbox" name="terms"/>
+                    <Field id="terms" type="checkbox" name="terms" check={values.vaccinations}/>
+                    {touched.terms && errors.terms && (
+                        <p>Must Accept Terms of Service</p>
+                    )}
                 </div>
                 <button>Submit!</button>
             </Form>
@@ -44,7 +51,11 @@ const FormikUserForm = withFormik({
         password: password,
         terms: terms || false
       };
-    }
+    },
+    validationSchema: Yup.object().shape({
+        name: Yup.string().min(3, 'Too short!').required("You need a real name!"),
+        terms: Yup.boolean().oneOf([true])
+    }),
 })(UserForm);
 
 
